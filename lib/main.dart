@@ -173,7 +173,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
   
   void _showHelp() {
     final helpIcon = FontHelper.getHelpIcon(_effectiveFontFamily);
-    final settingsIcon = FontHelper.getSettingsIcon(_effectiveFontFamily);
     
     _output.addAll([
       '$helpIcon 可用命令:',
