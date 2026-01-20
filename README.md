@@ -63,8 +63,8 @@ dependencies:
 
 1. **克隆项目**
 ```bash
-git clone <repository-url>
-cd flutter-terminal
+git clone https://github.com/s0raLin/flutter-terminal-emulator.git
+cd flutter-terminal-emulator
 ```
 
 2. **安装依赖**
