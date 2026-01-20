@@ -49,6 +49,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
   double _fontSize = 14.0;
   Color _textColor = Colors.green;
   Color _backgroundColor = Colors.black;
+  String _fontFamily = 'JetBrainsMonoNerdFont';
   
   @override
   void initState() {
@@ -79,6 +80,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
       _fontSize = prefs.getDouble('fontSize') ?? 14.0;
       _textColor = Color(prefs.getInt('textColor') ?? Colors.green.value);
       _backgroundColor = Color(prefs.getInt('backgroundColor') ?? Colors.black.value);
+      _fontFamily = prefs.getString('fontFamily') ?? 'JetBrainsMonoNerdFont';
     });
   }
   
@@ -87,6 +89,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
     await prefs.setDouble('fontSize', _fontSize);
     await prefs.setInt('textColor', _textColor.value);
     await prefs.setInt('backgroundColor', _backgroundColor.value);
+    await prefs.setString('fontFamily', _fontFamily);
   }
   
   String _getPrompt() {
@@ -166,24 +169,31 @@ class _TerminalScreenState extends State<TerminalScreen> {
   
   void _showHelp() {
     _output.addAll([
-      '可用命令:',
-      '  help      - 显示此帮助信息',
-      '  clear     - 清空终端',
-      '  pwd       - 显示当前目录',
-      '  ls/dir    - 列出目录内容',
-      '  cd <dir>  - 切换目录',
-      '  mkdir <name> - 创建目录',
-      '  touch <file> - 创建文件',
-      '  cat <file>   - 显示文件内容',
-      '  echo <text>  - 输出文本',
-      '  history   - 显示命令历史',
-      '  settings  - 显示设置选项',
-      '  exit      - 退出应用',
+      ' 可用命令:',
+      '   help      - 显示此帮助信息',
+      '   clear     - 清空终端',
+      '   pwd       - 显示当前目录',
+      '   ls/dir    - 列出目录内容',
+      '   cd <dir>  - 切换目录',
+      '   mkdir <name> - 创建目录',
+      '   touch <file> - 创建文件',
+      '   cat <file>   - 显示文件内容',
+      '   echo <text>  - 输出文本',
+      '   history   - 显示命令历史',
+      '   settings  - 显示设置选项',
+      '   exit      - 退出应用',
       '',
-      '快捷键:',
-      '  Ctrl+C    - 中断当前命令',
-      '  ↑/↓       - 浏览命令历史',
-      '  Tab       - 自动补全(开发中)',
+      ' 快捷键:',
+      '   Ctrl+C    - 中断当前命令',
+      '   ↑/↓       - 浏览命令历史',
+      '   Tab       - 自动补全(开发中)',
+      '',
+      ' 支持的文件图标:',
+      '    Dart 文件    JavaScript/TypeScript',
+      '    Python 文件   Java 文件',
+      '    C/C++ 文件   HTML 文件',
+      '    JSON 文件    Markdown 文件',
+      '    图片文件    压缩文件',
     ]);
   }
   
@@ -203,11 +213,13 @@ class _TerminalScreenState extends State<TerminalScreen> {
       for (final entity in entities) {
         final name = path.basename(entity.path);
         if (entity is Directory) {
-          _output.add('📁 $name/');
+          _output.add(' $name/');
         } else {
           final stat = await entity.stat();
           final size = _formatFileSize(stat.size);
-          _output.add('📄 $name ($size)');
+          final extension = path.extension(name).toLowerCase();
+          String icon = _getFileIcon(extension);
+          _output.add('$icon $name ($size)');
         }
       }
     } catch (e) {
@@ -326,6 +338,62 @@ class _TerminalScreenState extends State<TerminalScreen> {
     }
   }
   
+  String _getFileIcon(String extension) {
+    // 使用 Nerd Font 图标
+    switch (extension) {
+      case '.dart':
+        return ''; // Dart 图标
+      case '.js':
+      case '.ts':
+        return ''; // JavaScript/TypeScript 图标
+      case '.py':
+        return ''; // Python 图标
+      case '.java':
+        return ''; // Java 图标
+      case '.cpp':
+      case '.c':
+        return ''; // C/C++ 图标
+      case '.html':
+        return ''; // HTML 图标
+      case '.css':
+        return ''; // CSS 图标
+      case '.json':
+        return ''; // JSON 图标
+      case '.xml':
+        return ''; // XML 图标
+      case '.md':
+        return ''; // Markdown 图标
+      case '.txt':
+        return ''; // 文本文件图标
+      case '.pdf':
+        return ''; // PDF 图标
+      case '.zip':
+      case '.tar':
+      case '.gz':
+        return ''; // 压缩文件图标
+      case '.png':
+      case '.jpg':
+      case '.jpeg':
+      case '.gif':
+        return ''; // 图片文件图标
+      case '.mp3':
+      case '.wav':
+        return ''; // 音频文件图标
+      case '.mp4':
+      case '.avi':
+        return ''; // 视频文件图标
+      case '.exe':
+        return ''; // 可执行文件图标
+      case '.sh':
+        return ''; // Shell 脚本图标
+      case '.yml':
+      case '.yaml':
+        return ''; // YAML 文件图标
+      default:
+        return ''; // 默认文件图标
+    }
+  }
+  
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '${bytes}B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)}KB';
@@ -379,55 +447,95 @@ class _TerminalScreenState extends State<TerminalScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('终端设置'),
+        title: const Text(' 终端设置'),
         content: StatefulBuilder(
-          builder: (context, setDialogState) => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: Text('字体大小'),
-                subtitle: Slider(
-                  value: _fontSize,
-                  min: 10.0,
-                  max: 24.0,
-                  divisions: 14,
-                  label: _fontSize.round().toString(),
-                  onChanged: (value) {
-                    setDialogState(() => _fontSize = value);
-                  },
-                ),
-              ),
-              ListTile(
-                title: Text('文字颜色'),
-                trailing: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: _textColor,
-                    border: Border.all(color: Colors.white),
+          builder: (context, setDialogState) => SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const Text('字体大小'),
+                  subtitle: Slider(
+                    value: _fontSize,
+                    min: 10.0,
+                    max: 24.0,
+                    divisions: 14,
+                    label: _fontSize.round().toString(),
+                    onChanged: (value) {
+                      setDialogState(() => _fontSize = value);
+                    },
                   ),
                 ),
-                onTap: () => _showColorPicker(true, setDialogState),
-              ),
-              ListTile(
-                title: Text('背景颜色'),
-                trailing: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: _backgroundColor,
-                    border: Border.all(color: Colors.white),
+                ListTile(
+                  title: const Text('字体系列'),
+                  subtitle: DropdownButton<String>(
+                    value: _fontFamily,
+                    isExpanded: true,
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'JetBrainsMonoNerdFont',
+                        child: Text('JetBrains Mono Nerd Font'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'CourierNew',
+                        child: Text('Courier New'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'monospace',
+                        child: Text('系统等宽字体'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        setDialogState(() => _fontFamily = value);
+                      }
+                    },
                   ),
                 ),
-                onTap: () => _showColorPicker(false, setDialogState),
-              ),
-            ],
+                ListTile(
+                  title: const Text('文字颜色'),
+                  trailing: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: _textColor,
+                      border: Border.all(color: Colors.white),
+                    ),
+                  ),
+                  onTap: () => _showColorPicker(true, setDialogState),
+                ),
+                ListTile(
+                  title: const Text('背景颜色'),
+                  trailing: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: _backgroundColor,
+                      border: Border.all(color: Colors.white),
+                    ),
+                  ),
+                  onTap: () => _showColorPicker(false, setDialogState),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text(' 字体预览'),
+                  subtitle: Text(
+                    'Hello 世界! 123 ABC  ',
+                    style: TextStyle(
+                      fontFamily: _fontFamily,
+                      fontSize: _fontSize,
+                      color: _textColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
@@ -435,7 +543,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
               _saveSettings();
               Navigator.pop(context);
             },
-            child: Text('保存'),
+            child: const Text('保存'),
           ),
         ],
       ),
@@ -511,9 +619,10 @@ class _TerminalScreenState extends State<TerminalScreen> {
                     return SelectableText(
                       _output[index],
                       style: TextStyle(
-                        fontFamily: 'Courier',
+                        fontFamily: _fontFamily,
                         fontSize: _fontSize,
                         color: _textColor,
+                        height: 1.2, // 行高
                       ),
                     );
                   },
@@ -531,9 +640,10 @@ class _TerminalScreenState extends State<TerminalScreen> {
                 Text(
                   _getPrompt(),
                   style: TextStyle(
-                    fontFamily: 'Courier',
+                    fontFamily: _fontFamily,
                     fontSize: _fontSize,
                     color: _textColor,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 Expanded(
@@ -541,9 +651,10 @@ class _TerminalScreenState extends State<TerminalScreen> {
                     controller: _controller,
                     focusNode: _focusNode,
                     style: TextStyle(
-                      fontFamily: 'Courier',
+                      fontFamily: _fontFamily,
                       fontSize: _fontSize,
                       color: _textColor,
+                      height: 1.2,
                     ),
                     decoration: InputDecoration(
                       border: InputBorder.none,

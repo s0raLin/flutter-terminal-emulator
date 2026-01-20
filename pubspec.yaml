@@ -21,13 +21,23 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # 如果需要添加资源文件，可以在这里配置
-  # assets:
-  #   - images/
-  #   - fonts/
+  # 字体配置
+  fonts:
+    - family: JetBrainsMonoNerdFont
+      fonts:
+        - asset: assets/fonts/JetBrainsMonoNerdFont-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/JetBrainsMonoNerdFont-Bold.ttf
+          weight: 700
+    
+    # 备用等宽字体
+    - family: CourierNew
+      fonts:
+        - asset: assets/fonts/CourierNew-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/CourierNew-Bold.ttf
+          weight: 700
 
-  # 如果需要自定义字体，可以在这里配置
-  # fonts:
-  #   - family: Courier
-  #     fonts:
-  #       - asset: fonts/CourierNew.ttf
+  # 资源文件配置
+  assets:
+    - assets/fonts/README.md

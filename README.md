@@ -13,6 +13,8 @@
 
 ### 🎨 界面特性
 - **可自定义主题**: 支持字体大小、文字颜色、背景颜色调整
+- **Nerd Font 支持**: 丰富的编程图标和符号显示
+- **中文优化**: 优秀的中文和多语言显示支持
 - **响应式设计**: 适配不同屏幕尺寸
 - **键盘快捷键**: 支持 Ctrl+C 中断、方向键历史浏览
 - **滚动输出**: 自动滚动到最新输出
@@ -49,6 +51,23 @@
 - Dart SDK
 - 对应平台的开发环境
 
+### 字体设置（推荐）
+为了获得最佳的显示效果，建议配置 Nerd Font：
+
+```bash
+# 自动下载字体（推荐）
+./scripts/download_fonts.sh
+
+# 或手动下载
+# 1. 访问 https://github.com/ryanoasis/nerd-fonts/releases
+# 2. 下载 JetBrainsMono.zip
+# 3. 解压并复制字体文件到 assets/fonts/ 目录
+```
+
+详细字体配置请参考 [字体设置指南](FONT_SETUP.md)。
+- Dart SDK
+- 对应平台的开发环境
+
 ### 依赖包
 ```yaml
 dependencies:
@@ -67,12 +86,18 @@ git clone <repository-url>
 cd flutter-terminal
 ```
 
-2. **安装依赖**
+2. **设置字体（推荐）**
+```bash
+# 自动下载 Nerd Font 字体
+./scripts/download_fonts.sh
+```
+
+3. **安装依赖**
 ```bash
 flutter pub get
 ```
 
-3. **运行应用**
+4. **运行应用**
 ```bash
 # 调试模式
 flutter run

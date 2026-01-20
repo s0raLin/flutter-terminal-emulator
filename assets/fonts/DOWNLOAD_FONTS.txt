@@ -1,0 +1,16 @@
+请下载以下字体文件到此目录：
+
+1. JetBrainsMonoNerdFont-Regular.ttf
+2. JetBrainsMonoNerdFont-Bold.ttf
+
+下载方法：
+
+方法一：运行自动下载脚本
+./scripts/download_fonts.sh
+
+方法二：手动下载
+1. 访问: https://github.com/ryanoasis/nerd-fonts/releases
+2. 下载 JetBrainsMono.zip
+3. 解压并复制以上两个文件到此目录
+
+完成后删除此文件。
