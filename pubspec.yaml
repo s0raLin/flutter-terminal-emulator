@@ -1,7 +1,7 @@
 name: flutter_terminal_emulator
 description: "A cross-platform terminal emulator built with Flutter, supporting basic file system operations and system command execution."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.0.1
