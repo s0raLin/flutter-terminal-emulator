@@ -29,14 +29,6 @@ flutter:
           weight: 400
         - asset: assets/fonts/JetBrainsMonoNerdFont-Bold.ttf
           weight: 700
-    
-    # 备用等宽字体
-    - family: CourierNew
-      fonts:
-        - asset: assets/fonts/CourierNew-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/CourierNew-Bold.ttf
-          weight: 700
 
   # 资源文件配置
   assets:

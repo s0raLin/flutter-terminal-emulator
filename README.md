@@ -64,7 +64,7 @@
 # 3. 解压并复制字体文件到 assets/fonts/ 目录
 ```
 
-详细字体配置请参考 [字体设置指南](FONT_SETUP.md)。
+详细字体配置请参考 [字体设置指南](FONT_SETUP.md) 或 [快速设置](FONT_QUICK_SETUP.md)。
 - Dart SDK
 - 对应平台的开发环境
 

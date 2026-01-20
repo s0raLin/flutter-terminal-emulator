@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:process_run/shell.dart';
 import 'package:path/path.dart' as path;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'font_helper.dart';
 
 void main() {
   runApp(TerminalApp());
@@ -50,6 +51,9 @@ class _TerminalScreenState extends State<TerminalScreen> {
   Color _textColor = Colors.green;
   Color _backgroundColor = Colors.black;
   String _fontFamily = 'JetBrainsMonoNerdFont';
+  
+  // 字体回退机制
+  String get _effectiveFontFamily => FontHelper.getEffectiveFontFamily(_fontFamily);
   
   @override
   void initState() {
@@ -168,8 +172,11 @@ class _TerminalScreenState extends State<TerminalScreen> {
   }
   
   void _showHelp() {
+    final helpIcon = FontHelper.getHelpIcon(_effectiveFontFamily);
+    final settingsIcon = FontHelper.getSettingsIcon(_effectiveFontFamily);
+    
     _output.addAll([
-      ' 可用命令:',
+      '$helpIcon 可用命令:',
       '   help      - 显示此帮助信息',
       '   clear     - 清空终端',
       '   pwd       - 显示当前目录',
@@ -188,12 +195,20 @@ class _TerminalScreenState extends State<TerminalScreen> {
       '   ↑/↓       - 浏览命令历史',
       '   Tab       - 自动补全(开发中)',
       '',
-      ' 支持的文件图标:',
-      '    Dart 文件    JavaScript/TypeScript',
-      '    Python 文件   Java 文件',
-      '    C/C++ 文件   HTML 文件',
-      '    JSON 文件    Markdown 文件',
-      '    图片文件    压缩文件',
+      if (_effectiveFontFamily == 'JetBrainsMonoNerdFont') ...[
+        ' 支持的文件图标:',
+        '    Dart 文件    JavaScript/TypeScript',
+        '    Python 文件   Java 文件',
+        '    C/C++ 文件   HTML 文件',
+        '    JSON 文件    Markdown 文件',
+        '    图片文件    压缩文件',
+      ] else ...[
+        ' 文件类型标识:',
+        '   [DART] Dart 文件   [JS] JavaScript 文件',
+        '   [PY] Python 文件   [JAVA] Java 文件',
+        '   [HTML] HTML 文件   [JSON] JSON 文件',
+        '   [DIR] 目录         [FILE] 普通文件',
+      ],
     ]);
   }
   
@@ -213,12 +228,13 @@ class _TerminalScreenState extends State<TerminalScreen> {
       for (final entity in entities) {
         final name = path.basename(entity.path);
         if (entity is Directory) {
-          _output.add(' $name/');
+          final dirIcon = FontHelper.getDirectoryIcon(_effectiveFontFamily);
+          _output.add('$dirIcon $name/');
         } else {
           final stat = await entity.stat();
           final size = _formatFileSize(stat.size);
           final extension = path.extension(name).toLowerCase();
-          String icon = _getFileIcon(extension);
+          String icon = FontHelper.getFileIcon(extension, _effectiveFontFamily);
           _output.add('$icon $name ($size)');
         }
       }
@@ -338,62 +354,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
     }
   }
   
-  String _getFileIcon(String extension) {
-    // 使用 Nerd Font 图标
-    switch (extension) {
-      case '.dart':
-        return ''; // Dart 图标
-      case '.js':
-      case '.ts':
-        return ''; // JavaScript/TypeScript 图标
-      case '.py':
-        return ''; // Python 图标
-      case '.java':
-        return ''; // Java 图标
-      case '.cpp':
-      case '.c':
-        return ''; // C/C++ 图标
-      case '.html':
-        return ''; // HTML 图标
-      case '.css':
-        return ''; // CSS 图标
-      case '.json':
-        return ''; // JSON 图标
-      case '.xml':
-        return ''; // XML 图标
-      case '.md':
-        return ''; // Markdown 图标
-      case '.txt':
-        return ''; // 文本文件图标
-      case '.pdf':
-        return ''; // PDF 图标
-      case '.zip':
-      case '.tar':
-      case '.gz':
-        return ''; // 压缩文件图标
-      case '.png':
-      case '.jpg':
-      case '.jpeg':
-      case '.gif':
-        return ''; // 图片文件图标
-      case '.mp3':
-      case '.wav':
-        return ''; // 音频文件图标
-      case '.mp4':
-      case '.avi':
-        return ''; // 视频文件图标
-      case '.exe':
-        return ''; // 可执行文件图标
-      case '.sh':
-        return ''; // Shell 脚本图标
-      case '.yml':
-      case '.yaml':
-        return ''; // YAML 文件图标
-      default:
-        return ''; // 默认文件图标
-    }
-  }
-  
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '${bytes}B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)}KB';
@@ -477,10 +437,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
                         child: Text('JetBrains Mono Nerd Font'),
                       ),
                       DropdownMenuItem(
-                        value: 'CourierNew',
-                        child: Text('Courier New'),
-                      ),
-                      DropdownMenuItem(
                         value: 'monospace',
                         child: Text('系统等宽字体'),
                       ),
@@ -522,7 +478,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
                   subtitle: Text(
                     'Hello 世界! 123 ABC  ',
                     style: TextStyle(
-                      fontFamily: _fontFamily,
+                      fontFamily: _fontFamily == 'JetBrainsMonoNerdFont' ? 'JetBrainsMonoNerdFont' : _fontFamily,
                       fontSize: _fontSize,
                       color: _textColor,
                     ),
@@ -619,7 +575,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
                     return SelectableText(
                       _output[index],
                       style: TextStyle(
-                        fontFamily: _fontFamily,
+                        fontFamily: _effectiveFontFamily,
                         fontSize: _fontSize,
                         color: _textColor,
                         height: 1.2, // 行高
@@ -640,7 +596,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
                 Text(
                   _getPrompt(),
                   style: TextStyle(
-                    fontFamily: _fontFamily,
+                    fontFamily: _effectiveFontFamily,
                     fontSize: _fontSize,
                     color: _textColor,
                     fontWeight: FontWeight.bold,
@@ -651,7 +607,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
                     controller: _controller,
                     focusNode: _focusNode,
                     style: TextStyle(
-                      fontFamily: _fontFamily,
+                      fontFamily: _effectiveFontFamily,
                       fontSize: _fontSize,
                       color: _textColor,
                       height: 1.2,
