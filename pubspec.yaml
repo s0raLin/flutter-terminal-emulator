@@ -1,0 +1,33 @@
+name: flutter_terminal_emulator
+description: "A cross-platform terminal emulator built with Flutter, supporting basic file system operations and system command execution."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  process_run: ^0.14.2
+  path: ^1.8.3
+  shared_preferences: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # 如果需要添加资源文件，可以在这里配置
+  # assets:
+  #   - images/
+  #   - fonts/
+
+  # 如果需要自定义字体，可以在这里配置
+  # fonts:
+  #   - family: Courier
+  #     fonts:
+  #       - asset: fonts/CourierNew.ttf
