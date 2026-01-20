@@ -266,7 +266,7 @@ flutter test --coverage
 
 - 项目主页: [GitHub Repository]
 - 问题反馈: [GitHub Issues]
-- 邮箱: [your-email@example.com]
+- 邮箱: [h5qkzf@163.com]
 
 ---
 
